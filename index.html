@@ -18,7 +18,7 @@
 </head>
 <body>
   <h1>UMA Gardening System</h1>
-  <button onclick="triggerGrowth()">Grow</button> <!-- Add Grow Button -->
+  <button onclick="triggerGrowth()">Grow</button> <!-- Grow Button -->
 
   <table>
     <thead>
@@ -35,106 +35,32 @@
   </table>
 
   <script>
-    // Plant data example with multiple stages
-    const plants = [
-      {
-        imgUrls: [
-          'https://github.com/CHALE-4/Plant-growth.tracker.2/blob/main/images/plant1.png?raw=true', 
-          'https://github.com/CHALE-4/Plant-growth.tracker.2/blob/main/images/plant2.png?raw=true', 
-          'https://github.com/CHALE-4/Plant-growth.tracker.2/blob/main/images/plant3.png?raw=true'
-        ],
-        username: 'CHALE4',
-        profileLink: 'https://chickensmoothie.com/user/username1',
-        growthStage: 0, // Starts at stage 1 (index 0)
-      },
-      {
-        imgUrls: [
-          'https://github.com/CHALE-4/Plant-growth.tracker.2/blob/main/images/plant2_stage1.jpg?raw=true', 
-          'https://github.com/CHALE-4/Plant-growth.tracker.2/blob/main/images/plant2_stage2.jpg?raw=true', 
-          'https://github.com/CHALE-4/Plant-growth.tracker.2/blob/main/images/plant2_stage3.jpg?raw=true'
-        ],
-        username: 'username2',
-        profileLink: 'https://chickensmoothie.com/user/username2',
-        growthStage: 0, // Starts at stage 1 (index 0)
-      }
-    ];
-
-    // Function to render the table
-    function renderTable() {
-      const tableBody = document.getElementById('plants-table');
-      tableBody.innerHTML = ''; // Clear table before adding new rows
-
-      // Make sure plants array is not empty
-      if (plants.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="4">No plants available</td></tr>';
-        return;
-      }
-
-      plants.forEach((plant, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td><img src="${plant.imgUrls[plant.growthStage]}" alt="Plant ${index + 1}" width="100"></td>
-          <td>${plant.username}</td>
-          <td><a href="${plant.profileLink}" target="_blank">Profile</a></td>
-          <td>
-            <button onclick="prevGrowthStage(${index})">Previous Stage</button>
-            <button onclick="nextGrowthStage(${index})">Next Stage</button>
-          </td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
-
-    // Function to update to the next growth stage
-    function nextGrowthStage(index) {
-      const plant = plants[index];
-      if (plant.growthStage < plant.imgUrls.length - 1) {
-        plant.growthStage++; // Move to the next stage
-      } else {
-        alert('This plant is at its final stage!');
-      }
-      renderTable(); // Re-render the table to update the plant image
-    }
-
-    // Function to go back to the previous growth stage
-    function prevGrowthStage(index) {
-      const plant = plants[index];
-      if (plant.growthStage > 0) {
-        plant.growthStage--; // Move to the previous stage
-      } else {
-        alert('This plant is already at the first stage!');
-      }
-      renderTable(); // Re-render the table to update the plant image
-    }
-
     // Function to trigger the growth process via GitHub API
     function triggerGrowth() {
-      fetch('https://api.github.com/repos/CHALE-4/Plant-growth.tracker.2/dispatches', {
+      // Replace 'YOUR_USERNAME' and 'YOUR_REPO' with your GitHub username and repository name
+      fetch('https://api.github.com/repos/CHALE-4/Plant-growth.tracker.2/dispatches', { 
         method: 'POST',
         headers: {
-          'Accept': 'application/vnd.github+json',
-          'Authorization': 'Bearer ${{ secrets.GH_PAT }}',  // Replace this with your token
-          'X-GitHub-Api-Version': '2022-11-28'
+          'Authorization': 'Bearer asscess token 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', // Replace with your actual PAT
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          event_type: 'growth_trigger'  // This custom event type will trigger the workflow
-        })
+          event_type: 'growth_trigger', // The event that triggers the workflow
+        }),
       })
       .then(response => {
-        if (response.ok) {
-          alert('Growth triggered!');
-        } else {
-          alert('Error triggering growth.');
+        if (!response.ok) {
+          throw new Error('Error triggering growth');
         }
+        return response.json();
+      })
+      .then(data => {
+        alert('Growth triggered successfully!');
       })
       .catch(error => {
-        console.error('Error:', error);
-        alert('Error triggering growth.');
+        alert(error.message);
       });
     }
-
-    // Render table on page load
-    renderTable(); // Call renderTable to load the plants into the table
   </script>
 </body>
 </html>
