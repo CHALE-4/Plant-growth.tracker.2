@@ -1,0 +1,26 @@
+name: Update Plant Growth
+
+on:
+  workflow_dispatch: # Allows manual triggering
+  schedule:
+    - cron: '0 0 * * *'  # Runs once a day (adjust as needed)
+
+jobs:
+  update-growth:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Update plant growth
+        run: |
+          python update_plants.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add images/
+          git commit -m "Automated plant growth update"
+          git push
