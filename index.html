@@ -18,6 +18,8 @@
 </head>
 <body>
   <h1>UMA Gardening System</h1>
+  <button onclick="triggerGrowth()">Grow</button> <!-- Add Grow Button -->
+
   <table>
     <thead>
       <tr>
@@ -98,9 +100,7 @@
       renderTable(); // Re-render the table to update the plant image
     }
 
-    // Initial render
-    renderTable();
-  </script>
-</body>
-</html>
+    // Function to trigger the growth process via GitHub API
+    function triggerGrowth() {
+        fetch('https://api.github.com/repos/YOUR_USERNAME/YOUR_REPO/a
 
