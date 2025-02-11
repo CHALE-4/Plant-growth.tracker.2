@@ -1,20 +1,26 @@
-import json
 import os
 import shutil
 
-# Load plant data
-with open('data/plants.json', 'r') as file:
-    plants = json.load(file)
+# Define the image folder
+image_folder = "images"
 
-# Update plant stages
-for plant in plants:
-    if plant["stage"] < 3:  # Max stage is 3
-        plant["stage"] += 1
-        new_image = f"images/{plant['image'].split('.')[0]}_stage{plant['stage']}.jpg"
-        
-        # Overwrite the current image
-        shutil.copy(new_image, f"images/{plant['image']}")
+# Define plant growth stages
+plant_stages = {
+    "plant1.png": ["plant1_stage1.png", "plant1_stage2.png", "plant1_stage3.png"],
+    "plant2.png": ["plant2_stage1.png", "plant2_stage2.png", "plant2_stage3.png"]
+}
 
-# Save updated plant data
-with open('data/plants.json', 'w') as file:
-    json.dump(plants, file, indent=4)
+# Function to update plant stages
+def update_plant_growth():
+    for plant, stages in plant_stages.items():
+        current_stage = next((s for s in stages if os.path.exists(os.path.join(image_folder, s))), None)
+        if current_stage:
+            current_index = stages.index(current_stage)
+            if current_index < len(stages) - 1:
+                next_stage = stages[current_index + 1]
+                shutil.move(os.path.join(image_folder, next_stage), os.path.join(image_folder, plant))
+                print(f"Updated {plant} to {next_stage}")
+
+if __name__ == "__main__":
+    update_plant_growth()
+
