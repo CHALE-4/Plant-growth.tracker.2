@@ -1,0 +1,17 @@
+name: Trigger Plant Growth Update
+
+on:
+  repository_dispatch:
+    types: [growth_trigger]  # We use this custom event type to trigger the workflow
+
+jobs:
+  trigger-growth:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Plant Growth Update
+        run: |
+          echo "Triggering plant growth update..."
+          curl -X POST -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \  # Use your secure GitHub Secret
+               -H "Accept: application/vnd.github+json" \
+               https://api.github.com/repos/${{ github.repository }}/actions/workflows/update-plant-growth.yml/dispatches \
+               -d '{"ref": "main"}'
