@@ -1,9 +1,12 @@
 name: Update Plant Growth
 
 on:
-  workflow_dispatch: # Allows manual triggering
+  workflow_dispatch:  # Allows manual triggering
   schedule:
     - cron: '0 0 * * *'  # Runs once a day (adjust as needed)
+
+permissions:
+  contents: write  # ✅ Allows GitHub Actions to push updates
 
 jobs:
   update-growth:
@@ -22,5 +25,5 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           git add images/
-          git commit -m "Automated plant growth update"
+          git commit -m "Automated plant growth update" || echo "No changes to commit"
           git push
