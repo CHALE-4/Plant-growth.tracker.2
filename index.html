@@ -84,11 +84,23 @@
       } else {
         alert('This plant is at its final stage!');
       }
-      renderTable(); // Re-render the 
+      renderTable(); // Re-render the table to update the plant image
+    }
 
+    // Function to go back to the previous growth stage
+    function prevGrowthStage(index) {
+      const plant = plants[index];
+      if (plant.growthStage > 0) {
+        plant.growthStage--; // Move to the previous stage
+      } else {
+        alert('This plant is already at the first stage!');
+      }
+      renderTable(); // Re-render the table to update the plant image
+    }
 
     // Initial render
     renderTable();
   </script>
 </body>
 </html>
+
