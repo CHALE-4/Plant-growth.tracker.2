@@ -67,13 +67,16 @@
           <td><img src="${plant.imgUrls[plant.growthStage]}" alt="Plant ${index + 1}" width="100"></td>
           <td>${plant.username}</td>
           <td><a href="${plant.profileLink}" target="_blank">Profile</a></td>
-          <td><button onclick="nextGrowthStage(${index})">Next Stage</button></td>
+          <td>
+            <button onclick="prevGrowthStage(${index})">Previous Stage</button>
+            <button onclick="nextGrowthStage(${index})">Next Stage</button>
+          </td>
         `;
         tableBody.appendChild(row);
       });
     }
 
-    // Function to update the growth stage
+    // Function to update to the next growth stage
     function nextGrowthStage(index) {
       const plant = plants[index];
       if (plant.growthStage < plant.imgUrls.length - 1) {
@@ -81,8 +84,8 @@
       } else {
         alert('This plant is at its final stage!');
       }
-      renderTable(); // Re-render the table to update the plant image
-    }
+      renderTable(); // Re-render the 
+
 
     // Initial render
     renderTable();
