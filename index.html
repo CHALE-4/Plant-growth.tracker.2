@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UMA Gardening System</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>UMA Gardening System</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Plant Image</th>
+        <th>Username</th>
+        <th>Profile Link</th>
+        <th>Growth Selection</th>
+      </tr>
+    </thead>
+    <tbody id="plants-table">
+      <!-- Dynamic plant rows will go here -->
+    </tbody>
+  </table>
+
+  <script>
+    // Plant data example
+    const plants = [
+      { imgUrl: 'https://example.com/plant1.jpg', username: 'username1', profileLink: 'https://chickensmoothie.com/user/username1', growthStage: 1 },
+      { imgUrl: 'https://example.com/plant2.jpg', username: 'username2', profileLink: 'https://chickensmoothie.com/user/username2', growthStage: 2 }
+    ];
+
+    // Function to render the table
+    function renderTable() {
+      const tableBody = document.getElementById('plants-table');
+      tableBody.innerHTML = ''; // Clear table
+      plants.forEach((plant, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><img src="${plant.imgUrl}" alt="Plant ${index + 1}" width="100"></td>
+          <td>${plant.username}</td>
+          <td><a href="${plant.profileLink}" target="_blank">Profile</a></td>
+          <td><button onclick="nextGrowthStage(${index})">Next Stage</button></td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Function to update the growth stage
+    function nextGrowthStage(index) {
+      plants[index].growthStage++;
+      // Logic to update image URL based on new growth stage
+      plants[index].imgUrl = `https://example.com/plant${index + 1}_stage${plants[index].growthStage}.jpg`;
+      renderTable(); // Re-render table to update the plant image
+    }
+
+    // Initial render
+    renderTable();
+  </script>
+</body>
+</html>
