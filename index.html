@@ -53,7 +53,7 @@
           'https://github.com/CHALE-4/Plant-growth.tracker.2/blob/main/images/plant2_stage2.jpg?raw=true', 
           'https://github.com/CHALE-4/Plant-growth.tracker.2/blob/main/images/plant2_stage3.jpg?raw=true'
         ],
-        username: 'username2',
+        username: 'Griff',
         profileLink: 'https://chickensmoothie.com/user/username2',
         growthStage: 0, // Starts at stage 1 (index 0)
       }
@@ -66,41 +66,6 @@
       plants.forEach((plant, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td><img src="${plant.imgUrls[plant.growthStage]}" alt="Plant ${index + 1}" width="100"></td>
-          <td>${plant.username}</td>
-          <td><a href="${plant.profileLink}" target="_blank">Profile</a></td>
-          <td>
-            <button onclick="prevGrowthStage(${index})">Previous Stage</button>
-            <button onclick="nextGrowthStage(${index})">Next Stage</button>
-          </td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
+   
 
-    // Function to update to the next growth stage
-    function nextGrowthStage(index) {
-      const plant = plants[index];
-      if (plant.growthStage < plant.imgUrls.length - 1) {
-        plant.growthStage++; // Move to the next stage
-      } else {
-        alert('This plant is at its final stage!');
-      }
-      renderTable(); // Re-render the table to update the plant image
-    }
-
-    // Function to go back to the previous growth stage
-    function prevGrowthStage(index) {
-      const plant = plants[index];
-      if (plant.growthStage > 0) {
-        plant.growthStage--; // Move to the previous stage
-      } else {
-        alert('This plant is already at the first stage!');
-      }
-      renderTable(); // Re-render the table to update the plant image
-    }
-
-    // Function to trigger the growth process via GitHub API
-    function triggerGrowth() {
-        fetch('https://api.github.com/repos/YOUR_USERNAME/YOUR_REPO/a
 
