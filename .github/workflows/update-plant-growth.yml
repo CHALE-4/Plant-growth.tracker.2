@@ -30,7 +30,7 @@ jobs:
           fi
 
       - name: Run update script
-        run: python update_plants.py
+        run: python script/update_plants.py
 
       - name: Commit and push changes
         env:
