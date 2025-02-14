@@ -1,12 +1,12 @@
 name: Update Plant Growth
 
 on:
-  workflow_dispatch:  # Allows manual triggering
   schedule:
-    - cron: '0 0 * * *'  # Runs once a day (adjust as needed)
+    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+  workflow_dispatch:  # Allows manual triggering
 
 permissions:
-  contents: write  # ✅ Allows GitHub Actions to push updates
+  contents: write  # Allows pushing updates
 
 jobs:
   update-growth:
@@ -16,14 +16,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Update plant growth
-        run: |
-          python update_plants.py
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run update script
+        run: python update_plants.py  # Runs your plant growth logic
 
       - name: Commit and push changes
+        env:
+          GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
+          git remote set-url origin https://x-access-token:${GH_PAT_TOKEN}@github.com/YOUR_USERNAME/YOUR_REPO.git
           git add images/
           git commit -m "Automated plant growth update" || echo "No changes to commit"
           git push
