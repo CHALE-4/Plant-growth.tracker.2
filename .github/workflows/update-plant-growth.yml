@@ -38,7 +38,7 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git remote set-url origin https://x-access-token:${GH_PAT_TOKEN}@github.com/YOUR_USERNAME/YOUR_REPO.git
+          git remote set-url origin https://x-access-token:${GH_PAT_TOKEN}@github.com/debaduttacodes/Plant-growth.tracker.2.git
           git add images/
           git commit -m "Automated plant growth update" || echo "No changes to commit"
           git push
