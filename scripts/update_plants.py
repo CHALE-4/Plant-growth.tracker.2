@@ -13,14 +13,19 @@ plant_stages = {
 # Function to update plant stages
 def update_plant_growth():
     for plant, stages in plant_stages.items():
-        current_stage = next((s for s in stages if os.path.exists(os.path.join(image_folder, s))), None)
-        if current_stage:
-            current_index = stages.index(current_stage)
-            if current_index < len(stages) - 1:
-                next_stage = stages[current_index + 1]
-                shutil.move(os.path.join(image_folder, next_stage), os.path.join(image_folder, plant))
-                print(f"Updated {plant} to {next_stage}")
+        plant_path = os.path.join(image_folder, plant)
+
+        # Find the current stage
+        for i, stage in enumerate(stages):
+            stage_path = os.path.join(image_folder, stage)
+            if os.path.exists(stage_path):
+                if i < len(stages) - 1:
+                    next_stage_path = os.path.join(image_folder, stages[i + 1])
+                    shutil.move(next_stage_path, plant_path)  # Move next stage to plant
+                    print(f"Updated {plant} to {stages[i + 1]}")
+                else:
+                    print(f"{plant} is at the final stage.")
+                break  # Stop after finding the current stage
 
 if __name__ == "__main__":
     update_plant_growth()
-
