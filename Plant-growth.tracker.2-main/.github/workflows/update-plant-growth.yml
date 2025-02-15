@@ -1,0 +1,44 @@
+name: Update Plant Growth
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+  workflow_dispatch:  # Allows manual triggering
+
+permissions:
+  contents: write
+
+jobs:
+  update-growth:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies (Skip if `requirements.txt` is missing)
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "No requirements.txt found, skipping installation"
+          fi
+
+      - name: Run update script
+        run: python scripts/update_plants.py
+
+      - name: Commit and push changes
+        env:
+          GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git remote set-url origin https://x-access-token:${GH_PAT_TOKEN}@github.com/debaduttacodes/Plant-growth.tracker.2.git
+          git add images/
+          git commit -m "Automated plant growth update" || echo "No changes to commit"
+          git push
