@@ -1,25 +1,7 @@
-/*
-
-latest update for the 7pm growth code:
-✔ 7 PM EST Growth Runs Properly
-✔ Ensures Plants Grow Immediately if Server Restarts After 7 PM
-✔ Prevents Missed Growth Updates
-✔ Proper Logging for Debugging
-
-*/
-
-const backendUrl = "https://plant-growth-tracker-2.onrender.com"; // Your actual backend URL
-
-fetch(`${backendUrl}/get-plants`)
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => console.error("Error:", error));
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
-const moment = require('moment-timezone'); // Timezone handling
 
 const app = express();
 app.use(bodyParser.json());
@@ -31,28 +13,28 @@ let users = [
     { id: 2, name: "User2", plant: "Rose", stage: 1, paused: false }
 ];
 
-let plantTypes = ["Sunflower", "Rose", "Tulip"]; // Available plant types
+let plantTypes = ["Sunflower", "Rose", "Tulip"]; // List of available plants
 let autoGrow = true;
 
-// ✅ **Function to Grow Plants Automatically**
+// Function to grow plants automatically
 function growPlants() {
     if (!autoGrow) return;
     users.forEach(user => {
         if (!user.paused && user.stage < 5) user.stage++;
     });
-    console.log("🌱 Plants grew to the next stage!");
+    console.log("Plants grew to the next stage");
 }
 
-// ✅ **API: Get All Users**
+// API to get all users
 app.get('/users', (req, res) => res.json(users));
 
-// ✅ **API: Toggle Automatic Growth**
+// API to toggle automatic growth
 app.post('/toggle-growth', (req, res) => {
     autoGrow = !autoGrow;
     res.json({ autoGrow });
 });
 
-// ✅ **API: Update Plant Stage or Pause**
+// API to update a user's plant stage or pause
 app.post('/update-stage', (req, res) => {
     const { id, action } = req.body;
     const user = users.find(u => u.id === id);
@@ -64,7 +46,7 @@ app.post('/update-stage', (req, res) => {
     res.json(users);
 });
 
-// ✅ **API: Add a New User**
+// ✅ **New API: Add a New User**
 app.post('/add-user', (req, res) => {
     const { name, plant } = req.body;
     if (!name || !plantTypes.includes(plant)) {
@@ -75,7 +57,7 @@ app.post('/add-user', (req, res) => {
     res.json(users);
 });
 
-// ✅ **API: Add a New Plant Type**
+// ✅ **New API: Add a New Plant Type**
 app.post('/add-plant', (req, res) => {
     const { plant } = req.body;
     if (!plant || plantTypes.includes(plant)) {
@@ -88,37 +70,15 @@ app.post('/add-plant', (req, res) => {
 // ✅ **API: Get Available Plant Types**
 app.get('/plants', (req, res) => res.json(plantTypes));
 
-// ✅ **Function to Schedule Growth at 7 PM EST**
-function scheduleGrowth() {
-    const now = moment().tz("America/New_York"); // Get current time in EST
+// Schedule automatic growth at 7 PM EST
+setInterval(() => {
+    const now = new Date();
+    if (now.getHours() === 19 && now.getMinutes() === 0) growPlants();
+}, 60000);
 
-    // If it's exactly 7 PM EST, grow plants
-    if (now.hour() === 19 && now.minute() === 0) {
-        growPlants();
-        console.log("🌱 Plants grew at 7 PM EST");
-    }
-
-    // If server restarts after 7 PM, grow plants immediately
-    if (now.hour() >= 19) {
-        growPlants();
-        console.log("⚡ Server restarted after 7 PM, growing plants immediately!");
-    }
-}
-
-// ✅ **Run the Growth Function Every Minute**
-setInterval(scheduleGrowth, 60000);
-
-// ✅ **Serve Frontend Files from 'public' Folder**
-app.use(express.static('public'));
-
-// ✅ **Serve Frontend**
+// Serve frontend
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// ✅ **Start Server**
-const port = process.env.PORT || 3000; // Default to 3000 for local dev
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
-
+app.listen(3000, () => console.log('Server running on http://localhost:3000'));
