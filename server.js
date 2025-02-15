@@ -8,7 +8,12 @@ latest update for the 7pm growth code:
 
 */
 
+const backendUrl = "https://plant-growth-tracker-2.onrender.com"; // Your actual backend URL
 
+fetch(`${backendUrl}/get-plants`)
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error("Error:", error));
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -113,4 +118,6 @@ app.get('/', (req, res) => {
 
 // ✅ **Start Server**
 module.exports = app; // ✅ Export the Express app for Vercel
+
+
 
