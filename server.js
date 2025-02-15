@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 app.use(bodyParser.json());
@@ -15,14 +16,29 @@ let users = [
 
 let plantTypes = ["Sunflower", "Rose", "Tulip"]; // List of available plants
 let autoGrow = true;
+const imagePath = path.join(__dirname, 'public', 'images');
 
-// Function to grow plants automatically
+// Function to grow plants automatically and update images
 function growPlants() {
     if (!autoGrow) return;
     users.forEach(user => {
-        if (!user.paused && user.stage < 5) user.stage++;
+        if (!user.paused && user.stage < 5) {
+            user.stage++;
+            updatePlantImage(user);
+        }
     });
     console.log("Plants grew to the next stage");
+}
+
+// Function to update plant images
+function updatePlantImage(user) {
+    const oldImage = path.join(imagePath, `${user.plant.toLowerCase()}_stage${user.stage - 1}.png`);
+    const newImage = path.join(imagePath, `${user.plant.toLowerCase()}_stage${user.stage}.png`);
+    
+    if (fs.existsSync(newImage)) {
+        fs.copyFileSync(newImage, oldImage);
+        console.log(`Updated ${user.name}'s plant image to stage ${user.stage}`);
+    }
 }
 
 // API to get all users
@@ -39,8 +55,14 @@ app.post('/update-stage', (req, res) => {
     const { id, action } = req.body;
     const user = users.find(u => u.id === id);
     if (user) {
-        if (action === 'next' && user.stage < 5) user.stage++;
-        if (action === 'prev' && user.stage > 1) user.stage--;
+        if (action === 'next' && user.stage < 5) {
+            user.stage++;
+            updatePlantImage(user);
+        }
+        if (action === 'prev' && user.stage > 1) {
+            user.stage--;
+            updatePlantImage(user);
+        }
         if (action === 'pause') user.paused = !user.paused;
     }
     res.json(users);
