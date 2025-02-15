@@ -5,7 +5,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 
 // MongoDB setup
-const connectionString = 'mongodb+srv://stunjuapp:TBLYrWIAinTmoZrf@cluster0.o1rdk.mongodb.net/mydatabase?retryWrites=true&w=majority'; // Replace with your MongoDB Atlas connection string
+const connectionString = 'mongodb+srv://stunjuapp:<db_password>@cluster0.o1rdk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Replace with your MongoDB Atlas connection string
 mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((err) => console.log('Error connecting to MongoDB Atlas:', err));
