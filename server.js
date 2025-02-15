@@ -112,5 +112,7 @@ app.get('/', (req, res) => {
 });
 
 // ✅ **Start Server**
-module.exports = app; // ✅ Export the Express app for Vercel
-
+const port = process.env.PORT || 3000; // Default to 3000 for local dev
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
