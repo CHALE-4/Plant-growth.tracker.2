@@ -1,74 +1,116 @@
-// Fetch and display users in the table
-function fetchUsers() {
-    fetch('/users')
-        .then(response => response.json())
-        .then(users => {
-            const table = document.getElementById('plants-table');
-            table.innerHTML = ''; // Clear old data
-            users.forEach(user => {
-                table.innerHTML += `
-                    <tr>
-                        <td><img src="plants/${user.plant}_${user.stage}.png" width="50"></td>
-                        <td>${user.name}</td>
-                        <td><a href="#">Profile</a></td>
-                        <td>
-                            <button onclick="updateStage(${user.id}, 'prev')">◀</button>
-                            <button onclick="updateStage(${user.id}, 'next')">▶</button>
-                            <button onclick="updateStage(${user.id}, 'pause')">${user.paused ? 'Resume' : 'Pause'}</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        });
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const path = require('path');
+const mongoose = require('mongoose');
+
+// MongoDB setup
+const connectionString = 'mongodb+srv://stunjuapp:TBLYrWIAinTmoZrf@cluster0.o1rdk.mongodb.net/mydatabase?retryWrites=true&w=majority'; // Replace with your MongoDB Atlas connection string
+mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB Atlas'))
+  .catch((err) => console.log('Error connecting to MongoDB Atlas:', err));
+
+// Define MongoDB models
+const userSchema = new mongoose.Schema({
+    name: String,
+    plant: String,
+    stage: { type: Number, default: 1 },
+    paused: { type: Boolean, default: false }
+});
+const plantTypeSchema = new mongoose.Schema({
+    name: String
+});
+
+const User = mongoose.model('User', userSchema);
+const PlantType = mongoose.model('PlantType', plantTypeSchema);
+
+// Express setup
+const app = express();
+app.use(bodyParser.json());
+app.use(cors());
+app.use(express.static('public')); // Serve frontend from 'public' folder
+
+let autoGrow = true;
+
+// Function to grow plants automatically
+async function growPlants() {
+    if (!autoGrow) return;
+    const users = await User.find({ paused: false, stage: { $lt: 5 } });
+    users.forEach(async (user) => {
+        user.stage++;
+        await user.save();
+    });
+    console.log("Plants grew to the next stage");
 }
 
-// Update a plant's stage or pause growth
-function updateStage(id, action) {
-    fetch('/update-stage', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, action })
-    }).then(fetchUsers);
-}
+// API to get all users
+app.get('/users', async (req, res) => {
+    const users = await User.find();
+    res.json(users);
+});
 
-// Toggle automatic growth
-function toggleGrowth() {
-    fetch('/toggle-growth', { method: 'POST' })
-        .then(response => response.json())
-        .then(data => {
-            alert(`Automatic Growth: ${data.autoGrow ? "Enabled" : "Disabled"}`);
-        });
-}
+// API to toggle automatic growth
+app.post('/toggle-growth', (req, res) => {
+    autoGrow = !autoGrow;
+    res.json({ autoGrow });
+});
 
-// Add a new user manually
-function addUser() {
-    const name = prompt("Enter username:");
-    fetch('/plants') // Fetch available plant types
-        .then(response => response.json())
-        .then(plants => {
-            const plant = prompt(`Choose a plant: ${plants.join(", ")}`);
-            if (!plants.includes(plant)) {
-                alert("Invalid plant type");
-                return;
-            }
-            fetch('/add-user', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, plant })
-            }).then(fetchUsers);
-        });
-}
+// API to update a user's plant stage or pause
+app.post('/update-stage', async (req, res) => {
+    const { id, action } = req.body;
+    const user = await User.findById(id);
+    if (user) {
+        if (action === 'next' && user.stage < 5) user.stage++;
+        if (action === 'prev' && user.stage > 1) user.stage--;
+        if (action === 'pause') user.paused = !user.paused;
+        await user.save();
+    }
+    const users = await User.find();
+    res.json(users);
+});
 
-// Add a new plant type manually
-function addPlant() {
-    const plant = prompt("Enter new plant type:");
-    fetch('/add-plant', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plant })
-    }).then(response => response.json())
-      .then(plants => alert(`Available plants: ${plants.join(", ")}`));
-}
+// New API: Add a New User
+app.post('/add-user', async (req, res) => {
+    const { name, plant } = req.body;
+    const plantExists = await PlantType.findOne({ name: plant });
+    if (!name || !plantExists) {
+        return res.status(400).json({ error: "Invalid name or plant type" });
+    }
+    const newUser = new User({ name, plant });
+    await newUser.save();
+    const users = await User.find();
+    res.json(users);
+});
 
-// Load users on page load
-fetchUsers();
+// New API: Add a New Plant Type
+app.post('/add-plant', async (req, res) => {
+    const { plant } = req.body;
+    const existingPlant = await PlantType.findOne({ name: plant });
+    if (!plant || existingPlant) {
+        return res.status(400).json({ error: "Invalid or duplicate plant type" });
+    }
+    const newPlant = new PlantType({ name: plant });
+    await newPlant.save();
+    const plantTypes = await PlantType.find();
+    res.json(plantTypes);
+});
+
+// API: Get Available Plant Types
+app.get('/plants', async (req, res) => {
+    const plantTypes = await PlantType.find();
+    res.json(plantTypes);
+});
+
+// Schedule automatic growth at 7 PM EST
+setInterval(() => {
+    const now = new Date();
+    if (now.getHours() === 19 && now.getMinutes() === 0) growPlants();
+}, 60000);
+
+// Serve frontend
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Start the server
+app.listen(3000, () => console.log('Server running on http://localhost:3000'));

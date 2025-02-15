@@ -11,7 +11,6 @@ mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: 
 
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((err) => console.log('Error connecting to MongoDB Atlas:', err));
-  
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static('public')); // Serve frontend from 'public' folder
