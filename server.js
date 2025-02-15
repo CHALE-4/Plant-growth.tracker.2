@@ -7,10 +7,10 @@ const mongoose = require('mongoose');
 
 const app = express();
 const connectionString = 'mongodb+srv://stunjuapp:TBLYrWIAinTmoZrf@cluster0.o1rdk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.log('MongoDB connection error:', err));
 
-  .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch((err) => console.log('Error connecting to MongoDB Atlas:', err));
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static('public')); // Serve frontend from 'public' folder
