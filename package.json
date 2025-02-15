@@ -1,12 +1,10 @@
 {
-  "_comment": "Vercel sees index.js as entry file.",
   "name": "plant-admin-panel",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-  "start": "node index.js",
-  "vercel-build": "vercel build"
- }  // vercel  looks for index.js as entry file.
+    "start": "node index.js",
+    "vercel-build": "vercel build"
   },
   "keywords": [],
   "author": "",
