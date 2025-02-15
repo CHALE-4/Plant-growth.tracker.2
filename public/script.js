@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
-const mongoose = require('mongoose');
 
 // MongoDB setup
 const connectionString = 'mongodb+srv://stunjuapp:<db_password>@cluster0.o1rdk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Replace with your MongoDB Atlas connection string
