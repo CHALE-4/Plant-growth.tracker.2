@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Growth Admin</title>
+    <script src="script.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 10px; }
+        img { width: 50px; height: 50px; }
+    </style>
+</head>
+<body>
+
+    <h1>Plant Growth Admin Panel</h1>
+
+    <button onclick="toggleGrowth()">Toggle Auto-Growth</button>
+
+    <h2>Users</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Plant</th>
+                <th>Stage</th>
+                <th>Paused</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+    </table>
+
+    <h2>Add New User</h2>
+    <input type="text" id="newUserName" placeholder="User Name">
+    <select id="plantTypeSelect"></select>
+    <button onclick="addUser()">Add User</button>
+
+    <h2>Add New Plant Type</h2>
+    <input type="text" id="newPlantName" placeholder="Plant Name">
+    <button onclick="addPlant()">Add Plant</button>
+
+    <script>
+        async function loadUsers() {
+            const res = await fetch('/users');
+            const users = await res.json();
+            const table = document.getElementById('userTable');
+            table.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.name}</td>
+                    <td>${user.plant}</td>
+                    <td>
+                        <img src="images/${user.plant.toLowerCase()}_${user.stage}.png" alt="Plant Image">
+                    </td>
+                    <td>${user.paused ? 'Yes' : 'No'}</td>
+                    <td>
+                        <button onclick="updateStage(${user.id}, 'next')">Next</button>
+                        <button onclick="updateStage(${user.id}, 'prev')">Prev</button>
+                        <button onclick="updateStage(${user.id}, 'pause')">Pause</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function updateStage(id, action) {
+            await fetch('/update-stage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, action })
+            });
+            loadUsers();
+        }
+
+        async function toggleGrowth() {
+            await fetch('/toggle-growth', { method: 'POST' });
+            alert('Growth toggled!');
+        }
+
+        async function loadPlants() {
+            const res = await fetch('/plants');
+            const plants = await res.json();
+            const select = document.getElementById('plantTypeSelect');
+            select.innerHTML = plants.map(plant => `<option value="${plant}">${plant}</option>`).join('');
+        }
+
+        async function addUser() {
+            const name = document.getElementById('newUserName').value;
+            const plant = document.getElementById('plantTypeSelect').value;
+            if (!name) return alert('Enter a name!');
+            await fetch('/add-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, plant })
+            });
+            loadUsers();
+        }
+
+        async function addPlant() {
+            const plant = document.getElementById('newPlantName').value;
+            if (!plant) return alert('Enter a plant name!');
+            await fetch('/add-plant', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ plant })
+            });
+            loadPlants();
+        }
+
+        loadUsers();
+        loadPlants();
+    </script>
+
+</body>
+</html>

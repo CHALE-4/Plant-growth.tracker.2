@@ -1,0 +1,15 @@
+name: Plant Growth Trigger
+
+on:
+  repository_dispatch:
+    types: [growth_trigger]
+
+jobs:
+  grow_plant:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run Growth Logic
+        run: echo "🌱 Plant growth triggered!"

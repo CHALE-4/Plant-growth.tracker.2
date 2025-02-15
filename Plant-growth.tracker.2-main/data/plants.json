@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "username": "CHALE4",
+    "profile": "https://chickensmoothie.com/user/CHALE4",
+    "stage": 1,
+    "image": "plant1.jpg"
+  },
+  {
+    "id": 2,
+    "username": "Player2",
+    "profile": "https://chickensmoothie.com/user/Player2",
+    "stage": 1,
+    "image": "plant2.jpg"
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "name": "plant-admin-panel",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "vercel-build": "vercel build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "moment-timezone": "^0.5.47",
+    "mongoose": "^8.10.1"
+  },
+  "description": ""
+}
